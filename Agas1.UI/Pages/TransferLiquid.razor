@@ -1,0 +1,32 @@
+﻿@page "/transfer-liquid"
+@using Agas1.Logic.Services
+
+@inject DistilleryService Service
+
+@code {
+    private int fromTankId;
+    private int toTankId;
+    private double volume;
+
+    private async Task TransferLiquidOnClick()
+    {
+        await Service.TransferLiquidBetweenTanks(fromTankId, toTankId, volume);
+        volume = 0;  // Reset the form
+    }
+}
+
+<h3>Transfer Liquid Between Tanks</h3>
+
+<label>From Tank ID: </label>
+<input type="number" @bind="fromTankId" class="form-control" />
+<br />
+
+<label>To Tank ID: </label>
+<input type="number" @bind="toTankId" class="form-control" />
+<br />
+
+<label>Volume: </label>
+<input type="number" @bind="volume" class="form-control" />
+<br />
+
+<button @onclick="TransferLiquidOnClick" class="btn btn-primary">Transfer Liquid</button>

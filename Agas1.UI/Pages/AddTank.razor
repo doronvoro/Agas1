@@ -1,0 +1,28 @@
+﻿@page "/add-tank"
+@using Agas1.Logic.Services
+
+@inject DistilleryService Service
+
+@code {
+    private string tankName;
+    private double initialVolume;
+
+    private async Task AddTankOnClick()
+    {
+        await Service.AddTank(tankName, initialVolume);
+        tankName = string.Empty;  // Reset the form
+        initialVolume = 0;
+    }
+}
+
+<h3>Add New Tank</h3>
+
+<label>Tank Name: </label>
+<input type="text" @bind="tankName" class="form-control" />
+<br />
+
+<label>Initial Volume: </label>
+<input type="number" @bind="initialVolume" class="form-control" />
+<br />
+
+<button @onclick="AddTankOnClick" class="btn btn-primary">Add Tank</button>

@@ -1,19 +1,30 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>Agas1.UI</PageTitle>
-
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Agas1 Distillery Management</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/add-tank">Add Tank</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/add-liquid">Add Liquid to Tank</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/transfer-liquid">Transfer Liquid</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tank-history">Tank History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tanks-report">Tank Report</a>
+                </li>
+            </ul>
         </div>
+    </div>
+</nav>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+<div class="container">
+    @Body  <!-- This is the correct way to render the body of the layout -->
 </div>

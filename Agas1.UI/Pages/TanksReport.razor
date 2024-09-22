@@ -1,0 +1,36 @@
+﻿@page "/tanks-report"
+@using Agas1.Logic.Models
+@using Agas1.Logic.Services
+
+@inject DistilleryService Service
+
+@code {
+    private List<Tank> tanks = new List<Tank>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        tanks = await Service.GetTanksReportAsync();
+    }
+}
+
+<h3>Tank Report</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tank ID</th>
+            <th>Tank Name</th>
+            <th>Current Volume</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tank in tanks)
+        {
+            <tr>
+                <td>@tank.Id</td>
+                <td>@tank.Name</td>
+                <td>@tank.Volume</td>
+            </tr>
+        }
+    </tbody>
+</table>

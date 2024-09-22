@@ -3,17 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agas1.Logic", "Agas1.Logic\Agas1.Logic.csproj", "{3F018CB4-80F1-4E7E-B680-595C4A7E9909}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agas1.Logic", "Agas1.Logic\Agas1.Logic.csproj", "{3F018CB4-80F1-4E7E-B680-595C4A7E9909}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agas1.UI", "Agas1.UI\Agas1.UI.csproj", "{6F7BDC52-F554-4A44-AD74-49FA162CF08B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agas1.UI", "Agas1.UI\Agas1.UI.csproj", "{6F7BDC52-F554-4A44-AD74-49FA162CF08B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3F018CB4-80F1-4E7E-B680-595C4A7E9909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -24,5 +21,11 @@ Global
 		{6F7BDC52-F554-4A44-AD74-49FA162CF08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F7BDC52-F554-4A44-AD74-49FA162CF08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F7BDC52-F554-4A44-AD74-49FA162CF08B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {727D2207-8BE7-4450-9C01-84BD7A21D155}
 	EndGlobalSection
 EndGlobal

@@ -126,18 +126,23 @@ namespace Agas1.Logic.Services
         // Add a new tank
         public async Task AddTank(string name, double initialVolume)
         {
+            // Create a new tank
             var tank = new Tank
             {
                 Name = name,
                 Volume = initialVolume
             };
+
             _context.Tanks.Add(tank);
 
-            // Log the tank creation
+            // Save changes to the database to generate the TankId
+            await _context.SaveChangesAsync();
+
+            // Now that the TankId has been generated, we can safely log the operation
             var log = new TankLog
             {
-                TankId = tank.Id,
-                Operation = OperationType.TankCreation,  // Use enum
+                TankId = tank.Id,  // Make sure TankId is set
+                Operation = OperationType.TankCreation,
                 VolumeChange = initialVolume,
                 LiquidTypeId = null,  // No specific liquid type for tank creation
                 Date = DateTime.UtcNow
@@ -146,6 +151,7 @@ namespace Agas1.Logic.Services
 
             await _context.SaveChangesAsync();
         }
+
 
         // Get all tanks with their current volume
         public async Task<List<Tank>> GetAllTanksAsync()
