@@ -1,0 +1,21 @@
+﻿@using Agas1.Logic.Models
+@code {
+    [Parameter] public List<Tank> Tanks { get; set; }  // Receive the list of tanks from the parent
+    [Parameter] public int SelectedTankId { get; set; }  // Two-way binding for the selected tank
+    [Parameter] public EventCallback<int> SelectedTankIdChanged { get; set; }  // Event callback for when the tank is selected
+
+    private async Task OnSelectedTankChanged(ChangeEventArgs e)
+    {
+        SelectedTankId = int.Parse(e.Value.ToString());
+        await SelectedTankIdChanged.InvokeAsync(SelectedTankId);  // Emit the new tank ID to the parent component
+    }
+}
+
+<label>Select Tank: </label>
+<select class="form-select" @onchange="OnSelectedTankChanged">
+    <option value="">-- Select a Tank --</option>
+    @foreach (var tank in Tanks)
+    {
+        <option value="@tank.Id" selected="@((tank.Id == SelectedTankId).ToString())">@tank.Name</option>
+    }
+</select>

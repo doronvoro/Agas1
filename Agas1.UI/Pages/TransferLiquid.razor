@@ -1,4 +1,5 @@
 ﻿@page "/transfer-liquid"
+@using Agas1.Logic.Models
 @using Agas1.Logic.Services
 
 @inject DistilleryService Service
@@ -7,22 +8,30 @@
     private int fromTankId;
     private int toTankId;
     private double volume;
+    private string message;
+    private List<Tank> tanks = new List<Tank>();  // Store the list of tanks
+
+    protected override async Task OnInitializedAsync()
+    {
+        tanks = await Service.GetAllTanksAsync();  // Fetch all tanks once
+    }
 
     private async Task TransferLiquidOnClick()
     {
         await Service.TransferLiquidBetweenTanks(fromTankId, toTankId, volume);
         volume = 0;  // Reset the form
+        message = "Liquid transferred successfully!";
     }
 }
 
 <h3>Transfer Liquid Between Tanks</h3>
 
-<label>From Tank ID: </label>
-<input type="number" @bind="fromTankId" class="form-control" />
+<label>From Tank: </label>
+<TankDropdown Tanks="tanks" SelectedTankId="fromTankId" SelectedTankIdChanged="@(id => fromTankId = id)" />
 <br />
 
-<label>To Tank ID: </label>
-<input type="number" @bind="toTankId" class="form-control" />
+<label>To Tank: </label>
+<TankDropdown Tanks="tanks" SelectedTankId="toTankId" SelectedTankIdChanged="@(id => toTankId = id)" />
 <br />
 
 <label>Volume: </label>
@@ -30,3 +39,8 @@
 <br />
 
 <button @onclick="TransferLiquidOnClick" class="btn btn-primary">Transfer Liquid</button>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-success mt-3">@message</div>
+}

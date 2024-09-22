@@ -1,46 +1,53 @@
 ﻿@page "/add-liquid"
 @using Agas1.Logic.Models
 @using Agas1.Logic.Services
+ 
 
 @inject DistilleryService Service
 
 @code {
-    private int tankId;
+    private int selectedTankId;
     private int selectedLiquidTypeId;
-    private List<LiquidType>
-    liquidTypes = new List<LiquidType>
-        ();
-        private double volume;
+    private List<LiquidType> liquidTypes = new List<LiquidType>();
+    private List<Tank> tanks = new List<Tank>();  // Store the list of tanks
+    private double volume;
+    private string message;
 
-        protected override async Task OnInitializedAsync()
-        {
+    protected override async Task OnInitializedAsync()
+    {
         liquidTypes = await Service.GetLiquidTypesAsync();
-        }
+        tanks = await Service.GetAllTanksAsync();  // Fetch all tanks once
+    }
 
-        private async Task AddLiquidToTank()
-        {
-        await Service.FillTankFromExternalResource(tankId, selectedLiquidTypeId, volume);
+    private async Task AddLiquidToTank()
+    {
+        await Service.FillTankFromExternalResource(selectedTankId, selectedLiquidTypeId, volume);
         volume = 0;  // Reset the form
-        }
-        }
+        message = "Liquid added successfully!";
+    }
+}
 
-        <h3>Add Liquid to Tank</h3>
+<h3>Add Liquid to Tank</h3>
 
-        <label>Tank ID: </label>
-        <input type="number" @bind="tankId" class="form-control" />
-        <br />
+<TankDropdown Tanks="tanks" SelectedTankId="selectedTankId" SelectedTankIdChanged="@(id => selectedTankId = id)" />
+<br />
 
-        <label>Liquid Type: </label>
-        <select @bind="selectedLiquidTypeId" class="form-select">
-            @foreach (var type in liquidTypes)
-            {
-                <option value="@type.Id">@type.Name</option>
-            }
-        </select>
-        <br />
+<label>Liquid Type: </label>
+<select @bind="selectedLiquidTypeId" class="form-select">
+    @foreach (var type in liquidTypes)
+    {
+        <option value="@type.Id">@type.Name</option>
+    }
+</select>
+<br />
 
-        <label>Volume: </label>
-        <input type="number" @bind="volume" class="form-control" />
-        <br />
+<label>Volume: </label>
+<input type="number" @bind="volume" class="form-control" />
+<br />
 
-        <button @onclick="AddLiquidToTank" class="btn btn-primary">Add Liquid</button>
+<button @onclick="AddLiquidToTank" class="btn btn-primary">Add Liquid</button>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-success mt-3">@message</div>
+}
