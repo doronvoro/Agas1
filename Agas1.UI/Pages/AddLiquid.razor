@@ -2,6 +2,7 @@
 @using Agas1.Logic.Models
 @using Agas1.Logic.Services
  
+ 
 
 @inject DistilleryService Service
 
@@ -10,6 +11,7 @@
     private int selectedLiquidTypeId;
     private List<LiquidType> liquidTypes = new List<LiquidType>();
     private List<Tank> tanks = new List<Tank>();  // Store the list of tanks
+
     private double volume;
     private string message;
 
@@ -17,6 +19,7 @@
     {
         liquidTypes = await Service.GetLiquidTypesAsync();
         tanks = await Service.GetAllTanksAsync();  // Fetch all tanks once
+
     }
 
     private async Task AddLiquidToTank()
@@ -27,27 +30,37 @@
     }
 }
 
-<h3>Add Liquid to Tank</h3>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h3>Add Liquid to Tank</h3>
 
-<TankDropdown Tanks="tanks" SelectedTankId="selectedTankId" SelectedTankIdChanged="@(id => selectedTankId = id)" />
-<br />
+            <div class="form-group">
+                <label>Tank: </label>
+                <TankDropdown Tanks="tanks" SelectedTankId="selectedTankId" SelectedTankIdChanged="@(id => selectedTankId = id)" />
+            </div>
 
-<label>Liquid Type: </label>
-<select @bind="selectedLiquidTypeId" class="form-select">
-    @foreach (var type in liquidTypes)
-    {
-        <option value="@type.Id">@type.Name</option>
-    }
-</select>
-<br />
+            <div class="form-group">
+                <label>Liquid Type: </label>
+                <select @bind="selectedLiquidTypeId" class="form-select">
+                    @foreach (var type in liquidTypes)
+                    {
+                        <option value="@type.Id">@type.Name</option>
+                    }
+                </select>
+            </div>
 
-<label>Volume: </label>
-<input type="number" @bind="volume" class="form-control" />
-<br />
+            <div class="form-group">
+                <label>Volume: </label>
+                <input type="number" @bind="volume" class="form-control" />
+            </div>
 
-<button @onclick="AddLiquidToTank" class="btn btn-primary">Add Liquid</button>
+            <button @onclick="AddLiquidToTank" class="btn btn-primary mt-3">Add Liquid</button>
 
-@if (!string.IsNullOrEmpty(message))
-{
-    <div class="alert alert-success mt-3">@message</div>
-}
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <div class="alert alert-success mt-3">@message</div>
+            }
+        </div>
+    </div>
+</div>

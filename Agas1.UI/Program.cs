@@ -12,6 +12,8 @@ builder.Services.AddRazorComponents();
 builder.Services.AddDbContext<DistilleryContext>(options =>
     options.UseSqlite("Data Source=distillery.db"));  // Ensure DbContext is configured with SQLite
 builder.Services.AddScoped<DistilleryService>();
+builder.Services.AddScoped<LiquidTypeService>();
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();
