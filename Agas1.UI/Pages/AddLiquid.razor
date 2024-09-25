@@ -1,66 +1,106 @@
 ﻿@page "/add-liquid"
 @using Agas1.Logic.Models
 @using Agas1.Logic.Services
- 
- 
 
 @inject DistilleryService Service
 
 @code {
-    private int selectedTankId;
+    private int selectedTankId = 0;  // Default to 0 (no tank selected)
     private int selectedLiquidTypeId;
     private List<LiquidType> liquidTypes = new List<LiquidType>();
-    private List<Tank> tanks = new List<Tank>();  // Store the list of tanks
-
+    private List<Tank> visibleTanks = new List<Tank>();  // Store visible tanks
     private double volume;
     private string message;
 
+    // Use async method to load data once
     protected override async Task OnInitializedAsync()
     {
+        // Fetch visible tanks and liquid types asynchronously
+        visibleTanks = await Service.GetVisibleTanksAsync();
         liquidTypes = await Service.GetLiquidTypesAsync();
-        tanks = await Service.GetAllTanksAsync();  // Fetch all tanks once
-
     }
 
+    // Async method to add liquid to the tank
     private async Task AddLiquidToTank()
     {
-        await Service.FillTankFromExternalResource(selectedTankId, selectedLiquidTypeId, volume);
-        volume = 0;  // Reset the form
-        message = "Liquid added successfully!";
+        if (selectedTankId == 0)  // Ensure the user has selected a valid tank
+        {
+            message = "Please select a valid tank.";
+            return;
+        }
+
+        try
+        {
+            // Fetch the selected tank and liquid type details
+            var selectedTank = visibleTanks.FirstOrDefault(t => t.Id == selectedTankId);
+            var selectedLiquidType = liquidTypes.FirstOrDefault(lt => lt.Id == selectedLiquidTypeId);
+
+            if (selectedTank == null || selectedLiquidType == null)
+            {
+                message = "Invalid tank or liquid type selected.";
+                return;
+            }
+
+            double previousVolume = selectedTank.Volume;  // Get the tank's previous volume
+            await Service.FillTankFromExternalResource(selectedTankId, selectedLiquidTypeId, volume);
+
+            // Update the total volume after adding the liquid
+            double newTotalVolume = previousVolume + volume;
+
+            // Update the tank's volume (just for display purposes, to avoid re-fetching the list)
+            selectedTank.Volume = newTotalVolume;
+
+            // Improve the success message
+            message = $"{volume} liters of {selectedLiquidType.Name} added to tank {selectedTank.Name}. " +
+                      $"The total volume is now {newTotalVolume} liters ({previousVolume} + {volume}).";
+
+            // Reset the form fields after successful addition
+            ResetForm();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+    }
+
+    // Method to reset the form fields
+    private void ResetForm()
+    {
+        selectedTankId = 0;  // Reset tank selection
+        selectedLiquidTypeId = 0;  // Reset liquid type selection
+        volume = 0;  // Reset volume
     }
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h3>Add Liquid to Tank</h3>
+<h3>Add Liquid to Tank</h3>
 
-            <div class="form-group">
-                <label>Tank: </label>
-                <TankDropdown Tanks="tanks" SelectedTankId="selectedTankId" SelectedTankIdChanged="@(id => selectedTankId = id)" />
-            </div>
+<!-- Use TankDropdown Component and pass the loaded visibleTanks -->
+<TankDropdown Tanks="visibleTanks" SelectedTankId="selectedTankId" SelectedTankIdChanged="@(id => selectedTankId = id)" />
+<br />
 
-            <div class="form-group">
-                <label>Liquid Type: </label>
-                <select @bind="selectedLiquidTypeId" class="form-select">
-                    @foreach (var type in liquidTypes)
-                    {
-                        <option value="@type.Id">@type.Name</option>
-                    }
-                </select>
-            </div>
+<!-- Use TankSelector Component to show the selected tank's current volume -->
+<TankSelector SelectedTankId="selectedTankId" />
+<br />
 
-            <div class="form-group">
-                <label>Volume: </label>
-                <input type="number" @bind="volume" class="form-control" />
-            </div>
+<!-- Dropdown for Liquid Type selection -->
+<label>Liquid Type: </label>
+<select @bind="selectedLiquidTypeId" class="form-select">
+    @foreach (var type in liquidTypes)
+    {
+            <option value="@type.Id">@type.Name</option>
+    }
+</select>
+<br />
 
-            <button @onclick="AddLiquidToTank" class="btn btn-primary mt-3">Add Liquid</button>
+<!-- Volume input -->
+<label>Volume (liters): </label>
+<input type="number" @bind="volume" class="form-control" />
+<br />
 
-            @if (!string.IsNullOrEmpty(message))
-            {
-                <div class="alert alert-success mt-3">@message</div>
-            }
-        </div>
-    </div>
-</div>
+<!-- Submit button -->
+<button @onclick="AddLiquidToTank" class="btn btn-primary">Add Liquid</button>
+
+@if (!string.IsNullOrEmpty(message))
+{
+        <div class="alert alert-success mt-3">@message</div>
+}

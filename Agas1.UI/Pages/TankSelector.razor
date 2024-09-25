@@ -1,0 +1,31 @@
+﻿@using Agas1.Logic.Models
+@using Agas1.Logic.Services
+
+@inject DistilleryService Service
+
+@code {
+    [Parameter] public int SelectedTankId { get; set; }  // Selected tank ID received from the parent
+    private Tank selectedTank;  // Store selected tank details
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (SelectedTankId > 0)
+        {
+            // Fetch the selected tank details
+            selectedTank = await Service.GetTankByIdAsync(SelectedTankId);
+        }
+        else
+        {
+            selectedTank = null;  // Reset if no tank is selected
+        }
+    }
+}
+
+@if (selectedTank != null)
+{
+    <label>Current Volume: @selectedTank.Volume liters</label>
+}
+else
+{
+    <label>No tank selected</label>
+}

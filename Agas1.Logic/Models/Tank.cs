@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public double Volume { get; set; }
 
+        public bool IsVisible { get; set; } = true;
         public List<LiquidAddition> LiquidAdditions { get; set; } = new List<LiquidAddition>();
     }
 }

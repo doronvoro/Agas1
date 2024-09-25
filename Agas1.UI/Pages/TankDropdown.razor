@@ -1,4 +1,5 @@
 ﻿@using Agas1.Logic.Models
+
 @code {
     [Parameter] public List<Tank> Tanks { get; set; }  // Receive the list of tanks from the parent
     [Parameter] public int SelectedTankId { get; set; }  // Two-way binding for the selected tank
@@ -6,16 +7,29 @@
 
     private async Task OnSelectedTankChanged(ChangeEventArgs e)
     {
-        SelectedTankId = int.Parse(e.Value.ToString());
-        await SelectedTankIdChanged.InvokeAsync(SelectedTankId);  // Emit the new tank ID to the parent component
+        if (int.TryParse(e.Value.ToString(), out var newSelectedTankId))
+        {
+            SelectedTankId = newSelectedTankId;
+        }
+        else
+        {
+            SelectedTankId = 0;  // Reset when no valid selection
+        }
+
+        await SelectedTankIdChanged.InvokeAsync(SelectedTankId);  // Emit the selected tank ID to the parent
+    }
+
+    protected override void OnParametersSet()
+    {
+        // This ensures that the dropdown correctly re-renders when the parent resets SelectedTankId to 0
     }
 }
 
-<label>Select Tank: </label>
 <select class="form-select" @onchange="OnSelectedTankChanged">
-    <option value="">-- Select a Tank --</option>
+    <!-- Default option with value 0 -->
+    <option value="0">-- Select a Tank --</option>
     @foreach (var tank in Tanks)
     {
-        <option value="@tank.Id" selected="@((tank.Id == SelectedTankId).ToString())">@tank.Name</option>
+        <option value="@tank.Id">@tank.Name</option>
     }
 </select>

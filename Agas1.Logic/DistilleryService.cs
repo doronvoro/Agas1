@@ -123,40 +123,49 @@ namespace Agas1.Logic.Services
             await _context.SaveChangesAsync();
         }
 
-        // Add a new tank
-        public async Task AddTank(string name, double initialVolume)
+        public async Task<List<Tank>> GetVisibleTanksAsync()
         {
-            // Create a new tank
-            var tank = new Tank
-            {
-                Name = name,
-                Volume = initialVolume
-            };
-
-            _context.Tanks.Add(tank);
-
-            // Save changes to the database to generate the TankId
-            await _context.SaveChangesAsync();
-
-            // Now that the TankId has been generated, we can safely log the operation
-            var log = new TankLog
-            {
-                TankId = tank.Id,  // Make sure TankId is set
-                Operation = OperationType.TankCreation,
-                VolumeChange = initialVolume,
-                LiquidTypeId = null,  // No specific liquid type for tank creation
-                Date = DateTime.UtcNow
-            };
-            _context.TankLogs.Add(log);
-
-            await _context.SaveChangesAsync();
+            return await _context.Tanks.Where(t => t.IsVisible).ToListAsync();
         }
-
-
-        // Get all tanks with their current volume
+        // Get all tanks (visible and invisible)
         public async Task<List<Tank>> GetAllTanksAsync()
         {
             return await _context.Tanks.ToListAsync();
+        }
+
+        // Add a new tank
+        public async Task AddTank(string name, double initialVolume)
+        {
+            var tank = new Tank { Name = name, Volume = initialVolume, IsVisible = true };
+            _context.Tanks.Add(tank);
+            await _context.SaveChangesAsync();
+        }
+
+        // Update an existing tank
+        public async Task UpdateTank(Tank tank)
+        {
+            _context.Tanks.Update(tank);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Tank> GetTankByIdAsync(int tankId)
+        {
+            return await _context.Tanks.FirstOrDefaultAsync(t => t.Id == tankId);
+        }
+
+        // Delete a tank if it is not used
+        public async Task<bool> DeleteTankAsync(int tankId)
+        {
+            var tank = await _context.Tanks.Include(t => t.LiquidAdditions).FirstOrDefaultAsync(t => t.Id == tankId);
+            if (tank == null || tank.LiquidAdditions.Count > 0)
+            {
+                // Tank is used in liquid additions or does not exist
+                return false;
+            }
+
+            _context.Tanks.Remove(tank);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         // Get the history of all operations performed on a tank
