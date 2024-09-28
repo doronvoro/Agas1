@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agas1.Logic", "Agas1.Logic\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Agas1.UI", "Agas1.UI\Agas1.UI.csproj", "{6F7BDC52-F554-4A44-AD74-49FA162CF08B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{1D7618DD-E294-4E2E-9488-455D7EDDAC18}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\Distillery_prosess.jpg = ..\..\..\Desktop\Distillery_prosess.jpg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

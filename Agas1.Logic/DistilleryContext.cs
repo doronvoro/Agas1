@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Agas1.Logic.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Agas1.Logic
 {
-    public class DistilleryContext : DbContext
+    public class DistilleryContext : IdentityDbContext
     {
         public DistilleryContext(DbContextOptions<DistilleryContext> options) : base(options)
         {
@@ -14,13 +15,15 @@ namespace Agas1.Logic
         public DbSet<LiquidAddition> LiquidAdditions { get; set; }
         public DbSet<TankLog> TankLogs { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Seed LiquidTypes
             modelBuilder.Entity<LiquidType>().HasData(
-                new LiquidType { Id = 1, Name = "Water" },
-                new LiquidType { Id = 2, Name = "Alcohol" }
-            );
+               new LiquidType { Id = 1, Name = "Water" },
+               new LiquidType { Id = 2, Name = "Alcohol" }
+           );
+            base.OnModelCreating(modelBuilder);  // Ensure Identity-related tables are created
         }
+ 
     }
 }
