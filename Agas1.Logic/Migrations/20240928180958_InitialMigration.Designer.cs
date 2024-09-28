@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Agas1.Logic.Migrations
 {
     [DbContext(typeof(DistilleryContext))]
-    [Migration("20240926202105_AddIdentityToDistilleryContext")]
-    partial class AddIdentityToDistilleryContext
+    [Migration("20240928180958_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,6 +74,38 @@ namespace Agas1.Logic.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Agas1.Logic.Models.Material", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Materials");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Water"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Alcohol"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Spice"
+                        });
+                });
+
             modelBuilder.Entity("Agas1.Logic.Models.Tank", b =>
                 {
                     b.Property<int>("Id")
@@ -107,6 +139,9 @@ namespace Agas1.Logic.Migrations
                     b.Property<int?>("LiquidTypeId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("MaterialId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Operation")
                         .HasColumnType("INTEGER");
 
@@ -116,6 +151,9 @@ namespace Agas1.Logic.Migrations
                     b.Property<int>("TankId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("TankProcessId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<double>("VolumeChange")
                         .HasColumnType("REAL");
 
@@ -123,11 +161,47 @@ namespace Agas1.Logic.Migrations
 
                     b.HasIndex("LiquidTypeId");
 
+                    b.HasIndex("MaterialId");
+
                     b.HasIndex("SourceTankId");
 
                     b.HasIndex("TankId");
 
+                    b.HasIndex("TankProcessId");
+
                     b.ToTable("TankLogs");
+                });
+
+            modelBuilder.Entity("Agas1.Logic.Models.TankProcess", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TankProcesses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Distillation"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Fermentation"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Soaking"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -347,6 +421,10 @@ namespace Agas1.Logic.Migrations
                         .WithMany()
                         .HasForeignKey("LiquidTypeId");
 
+                    b.HasOne("Agas1.Logic.Models.Material", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId");
+
                     b.HasOne("Agas1.Logic.Models.Tank", "SourceTank")
                         .WithMany()
                         .HasForeignKey("SourceTankId");
@@ -357,11 +435,21 @@ namespace Agas1.Logic.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Agas1.Logic.Models.TankProcess", "TankProcess")
+                        .WithMany()
+                        .HasForeignKey("TankProcessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("LiquidType");
+
+                    b.Navigation("Material");
 
                     b.Navigation("SourceTank");
 
                     b.Navigation("Tank");
+
+                    b.Navigation("TankProcess");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

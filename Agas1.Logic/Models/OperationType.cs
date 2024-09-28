@@ -5,7 +5,7 @@
         Addition = 1,
         TransferIn = 2,
         TransferOut = 3,
-        Process = 4,
+        TankProcess = 4,
         TankCreation = 5
     }
 }

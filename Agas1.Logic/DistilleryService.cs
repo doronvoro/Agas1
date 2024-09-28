@@ -33,14 +33,14 @@ namespace Agas1.Logic.Services
             tank.Volume += volume;
 
             // Log the liquid addition
-            var addition = new LiquidAddition
-            {
-                TankId = tankId,
-                LiquidTypeId = liquidTypeId,
-                VolumeAdded = volume,
-                DateAdded = DateTime.UtcNow
-            };
-            _context.LiquidAdditions.Add(addition);
+            //var addition = new LiquidAddition
+            //{
+            //    TankId = tankId,
+            //    LiquidTypeId = liquidTypeId,
+            //    VolumeAdded = volume,
+            //    DateAdded = DateTime.UtcNow
+            //};
+            //_context.LiquidAdditions.Add(addition);
 
             // Log the operation in the TankLog
             var log = new TankLog
@@ -99,28 +99,62 @@ namespace Agas1.Logic.Services
             await _context.SaveChangesAsync();
         }
 
-        // Create a process (e.g., distillation, maceration) that affects tank volume
-        public async Task CreateProcess(int tankId, string processType, double volumeChange)
+        // Method to get all tank processes
+        public async Task<List<TankProcess>> GetTankProcessesAsync()
+        {
+            return await _context.TankProcesses.ToListAsync();  // Updated to use TankProcess
+        }
+        public async Task<List<Material>> GetMaterialsAsync()
+        {
+            return await _context.Materials.ToListAsync();
+        }
+
+        // Method to handle tank process logic
+        public async Task<bool> ProcessTank(int tankId, int tankProcessId, double volumeChange, int? materialId = null)
         {
             var tank = await _context.Tanks.FindAsync(tankId);
-            if (tank == null)
-                throw new InvalidOperationException("Tank not found");
+            if (tank == null || volumeChange == 0)
+            {
+                return false;
+            }
 
-            // Update tank volume based on process (e.g., volume reduction after distillation)
-            tank.Volume += volumeChange;
+            var tankProcess = await _context.TankProcesses.FindAsync(tankProcessId);  // Updated to use TankProcess
+            if (tankProcess == null)
+            {
+                return false;
+            }
 
-            // Log the process operation
-            var log = new TankLog
+            Material material = null;
+            if (materialId.HasValue)
+            {
+                material = await _context.Materials.FindAsync(materialId.Value);
+            }
+
+            double newVolume = tank.Volume + volumeChange;
+            if (newVolume < 0)
+            {
+                return false; // Volume cannot be negative
+            }
+
+            // Update the tank's volume
+            tank.Volume = newVolume;
+            await _context.SaveChangesAsync();
+
+            // Create a new TankLog record
+            var tankLog = new TankLog
             {
                 TankId = tankId,
-                Operation = OperationType.Process,  // Use enum
+                TankProcessId = tankProcessId,  // Updated to use TankProcessId
+                MaterialId = materialId,
                 VolumeChange = volumeChange,
-                LiquidTypeId = null,  // No specific liquid type for processes
+                Operation = OperationType.TankProcess,
                 Date = DateTime.UtcNow
             };
-            _context.TankLogs.Add(log);
 
+            _context.TankLogs.Add(tankLog);
             await _context.SaveChangesAsync();
+
+            return true; // Process successful
         }
 
         public async Task<List<Tank>> GetVisibleTanksAsync()

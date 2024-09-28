@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Agas1.Logic.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentityToDistilleryContext : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,6 +63,32 @@ namespace Agas1.Logic.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LiquidTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Materials",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Materials", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TankProcesses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TankProcesses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,6 +248,8 @@ namespace Agas1.Logic.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     TankId = table.Column<int>(type: "INTEGER", nullable: false),
                     Operation = table.Column<int>(type: "INTEGER", nullable: false),
+                    TankProcessId = table.Column<int>(type: "INTEGER", nullable: false),
+                    MaterialId = table.Column<int>(type: "INTEGER", nullable: true),
                     VolumeChange = table.Column<double>(type: "REAL", nullable: false),
                     LiquidTypeId = table.Column<int>(type: "INTEGER", nullable: true),
                     SourceTankId = table.Column<int>(type: "INTEGER", nullable: true),
@@ -235,6 +263,17 @@ namespace Agas1.Logic.Migrations
                         column: x => x.LiquidTypeId,
                         principalTable: "LiquidTypes",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TankLogs_Materials_MaterialId",
+                        column: x => x.MaterialId,
+                        principalTable: "Materials",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TankLogs_TankProcesses_TankProcessId",
+                        column: x => x.TankProcessId,
+                        principalTable: "TankProcesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TankLogs_Tanks_SourceTankId",
                         column: x => x.SourceTankId,
@@ -255,6 +294,26 @@ namespace Agas1.Logic.Migrations
                 {
                     { 1, "Water" },
                     { 2, "Alcohol" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Materials",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Water" },
+                    { 2, "Alcohol" },
+                    { 3, "Spice" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "TankProcesses",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Distillation" },
+                    { 2, "Fermentation" },
+                    { 3, "Soaking" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -310,6 +369,11 @@ namespace Agas1.Logic.Migrations
                 column: "LiquidTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TankLogs_MaterialId",
+                table: "TankLogs",
+                column: "MaterialId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TankLogs_SourceTankId",
                 table: "TankLogs",
                 column: "SourceTankId");
@@ -318,6 +382,11 @@ namespace Agas1.Logic.Migrations
                 name: "IX_TankLogs_TankId",
                 table: "TankLogs",
                 column: "TankId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TankLogs_TankProcessId",
+                table: "TankLogs",
+                column: "TankProcessId");
         }
 
         /// <inheritdoc />
@@ -352,6 +421,12 @@ namespace Agas1.Logic.Migrations
 
             migrationBuilder.DropTable(
                 name: "LiquidTypes");
+
+            migrationBuilder.DropTable(
+                name: "Materials");
+
+            migrationBuilder.DropTable(
+                name: "TankProcesses");
 
             migrationBuilder.DropTable(
                 name: "Tanks");

@@ -1,0 +1,90 @@
+﻿@page "/manage-tank-process"
+@using Agas1.Logic.Models
+@using Agas1.Logic.Services
+
+@inject DistilleryService Service
+
+@code {
+    private int selectedTankId = 0;
+    private int selectedTankProcessId;  // Updated to TankProcessId
+    private double volumeChange;
+    private int? selectedMaterialId = null;
+    private List<TankProcess> tankProcesses = new List<TankProcess>();  // Updated to TankProcess
+    private List<Material> materials = new List<Material>();
+    private List<Tank> visibleTanks = new List<Tank>(); // Store visible tanks here
+    private string message = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tankProcesses = await Service.GetTankProcessesAsync();
+        materials = await Service.GetMaterialsAsync();
+        visibleTanks = await Service.GetVisibleTanksAsync();  // Fetch the tanks asynchronously
+    }
+
+    private async Task CreateProcess()
+    {
+        if (volumeChange == 0)
+        {
+            message = "Volume change must not be zero.";
+            return;
+        }
+
+        var result = await Service.ProcessTank(selectedTankId, selectedTankProcessId, volumeChange, selectedMaterialId);
+
+        if (result)
+        {
+            message = $"{Math.Abs(volumeChange)} liters {(volumeChange > 0 ? "added" : "reduced")} in tank {selectedTankId} using process {selectedTankProcessId}.";
+        }
+        else
+        {
+            message = "The process failed.";
+        }
+
+        ResetForm();
+    }
+
+    private void ResetForm()
+    {
+        selectedTankId = 0;
+        selectedTankProcessId = 0;  // Updated to reset TankProcessId
+        volumeChange = 0;
+        selectedMaterialId = null;
+    }
+}
+
+<h3>Manage Tank Process</h3>
+
+<!-- Bind the visible tanks to the TankDropdown after loading them in OnInitializedAsync -->
+<TankDropdown Tanks="visibleTanks" SelectedTankId="selectedTankId" SelectedTankIdChanged="@(id => selectedTankId = id)" />
+<br />
+
+<label>Process: </label>
+<select @bind="selectedTankProcessId" class="form-select">
+    <option value="">-- Select a Process --</option>
+    @foreach (var process in tankProcesses)
+    {
+        <option value="@process.Id">@process.Name</option>
+    }
+</select>
+<br />
+
+<label>Volume (liters): </label>
+<input type="number" @bind="volumeChange" class="form-control" placeholder="Enter volume change (positive to increase, negative to decrease)" />
+<br />
+
+<label>Material (optional): </label>
+<select @bind="selectedMaterialId" class="form-select">
+    <option value="">-- No Material --</option>
+    @foreach (var material in materials)
+    {
+        <option value="@material.Id">@material.Name</option>
+    }
+</select>
+<br />
+
+<button @onclick="CreateProcess" class="btn btn-primary">Create Process</button>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-success mt-3">@message</div>
+}
