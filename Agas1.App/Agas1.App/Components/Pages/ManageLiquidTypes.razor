@@ -1,0 +1,104 @@
+﻿@page "/manage-liquid-types"
+@using Agas1.Logic.Models
+@using Agas1.Logic.Services
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@inject LiquidTypeService LiquidTypeService
+
+<h3>Manage Liquid Types</h3>
+
+<div class="container">
+    <div class="row">
+        <!-- Add/Update Liquid Type Form -->
+        <div class="col-md-6">
+            <h4>@(editMode ? "Edit Liquid Type" : "Add New Liquid Type")</h4>
+
+            <div class="form-group">
+                <label for="liquidTypeName">Liquid Type Name</label>
+                <input type="text" id="liquidTypeName" @bind="currentLiquidType.Name" class="form-control" placeholder="Enter Liquid Type Name" />
+            </div>
+
+            <button class="btn btn-primary mt-3" @onclick="SaveLiquidType">@((editMode) ? "Update" : "Add") Liquid Type</button>
+            <button class="btn btn-secondary mt-3" @onclick="ClearForm">Clear</button>
+        </div>
+
+        <!-- List of Liquid Types -->
+        <div class="col-md-6">
+            <h4>Liquid Types</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var liquidType in liquidTypes)
+                    {
+                        <tr>
+                            <td>@liquidType.Name</td>
+                            <td>
+                                <button class="btn btn-warning" @onclick="() => EditLiquidType(liquidType)">Edit</button>
+                                <button class="btn btn-danger" @onclick="() => DeleteLiquidType(liquidType.Id)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<LiquidType> liquidTypes = new();
+    private LiquidType currentLiquidType = new();
+    private bool editMode = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        liquidTypes = await LiquidTypeService.GetAllLiquidTypesAsync();
+    }
+
+    private async Task SaveLiquidType()
+    {
+        if (editMode)
+        {
+            // Update liquid type
+            await LiquidTypeService.UpdateLiquidTypeAsync(currentLiquidType);
+        }
+        else
+        {
+            // Add new liquid type
+            await LiquidTypeService.AddLiquidTypeAsync(currentLiquidType);
+        }
+
+        // Refresh list
+        liquidTypes = await LiquidTypeService.GetAllLiquidTypesAsync();
+        ClearForm();
+    }
+
+    private void EditLiquidType(LiquidType liquidType)
+    {
+        currentLiquidType = new LiquidType
+            {
+                Id = liquidType.Id,
+                Name = liquidType.Name
+            };
+        editMode = true;
+    }
+
+    private async Task DeleteLiquidType(int liquidTypeId)
+    {
+        await LiquidTypeService.DeleteLiquidTypeAsync(liquidTypeId);
+        liquidTypes = await LiquidTypeService.GetAllLiquidTypesAsync();
+    }
+
+    private void ClearForm()
+    {
+        currentLiquidType = new LiquidType();
+        editMode = false;
+    }
+}

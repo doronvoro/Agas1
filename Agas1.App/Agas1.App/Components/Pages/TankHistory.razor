@@ -1,0 +1,56 @@
+﻿@page "/tank-history"
+@using Agas1.Logic.Models
+@using Agas1.Logic.Services
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@inject DistilleryService Service
+
+@code {
+    private int tankId;
+    private List<TankLog> tankLogs = new List<TankLog>();
+
+    private async Task LoadTankHistory()
+    {
+        tankLogs = await Service.GetTankHistoryAsync(tankId);
+    }
+}
+
+<h3>Tank History</h3>
+
+<label>Tank ID: </label>
+<input type="number" @bind="tankId" class="form-control" />
+<button @onclick="LoadTankHistory" class="btn btn-primary mt-2">Load History</button>
+
+@if (tankLogs.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Operation</th>
+                <th>Volume Change</th>
+                <th>Liquid Type</th>
+                <th>Source/Destination Tank</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in tankLogs)
+            {
+                <tr>
+                    <td>@log.Date</td>
+                    <td>@log.Operation</td>
+                    <td>@log.VolumeChange</td>
+                    <td>@(log.LiquidType != null ? log.LiquidType.Name : "Mixed")</td>
+                    <td>@(log.SourceTankId.HasValue ? $"Tank {log.SourceTankId}" : "N/A")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No history available for this tank.</p>
+}

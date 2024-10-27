@@ -7,9 +7,5 @@ namespace Agas1.Logic.Models
         public int Id { get; set; }
         public string Name { get; set; }
     }
-
-    public class ApplicationUser : IdentityUser
-    {
-        // Add additional properties if needed
-    }
+     
 }

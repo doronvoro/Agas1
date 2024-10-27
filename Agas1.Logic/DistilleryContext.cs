@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Agas1.Logic
 { 
-public class DistilleryContext : IdentityDbContext<ApplicationUser>
+public class DistilleryContext : IdentityDbContext<App.Data.ApplicationUser>
     {
     public DistilleryContext(DbContextOptions<DistilleryContext> options) : base(options)
     {
