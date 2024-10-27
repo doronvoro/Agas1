@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Agas1.Logic
 { 
-public class DistilleryContext : IdentityDbContext
-{
+public class DistilleryContext : IdentityDbContext<ApplicationUser>
+    {
     public DistilleryContext(DbContextOptions<DistilleryContext> options) : base(options)
     {
     }

@@ -12,6 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{1D7618DD-E
 		..\..\..\Desktop\Distillery_prosess.jpg = ..\..\..\Desktop\Distillery_prosess.jpg
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agas1.App", "Agas1.App\Agas1.App\Agas1.App.csproj", "{7A3A4913-5CFC-4274-87D6-D3872485FC17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agas1.App.Client", "Agas1.App\Agas1.App.Client\Agas1.App.Client.csproj", "{D9268618-9A8C-4D0A-B30B-6F6A83AEAE7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{6F7BDC52-F554-4A44-AD74-49FA162CF08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F7BDC52-F554-4A44-AD74-49FA162CF08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F7BDC52-F554-4A44-AD74-49FA162CF08B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A3A4913-5CFC-4274-87D6-D3872485FC17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A3A4913-5CFC-4274-87D6-D3872485FC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A3A4913-5CFC-4274-87D6-D3872485FC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A3A4913-5CFC-4274-87D6-D3872485FC17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9268618-9A8C-4D0A-B30B-6F6A83AEAE7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9268618-9A8C-4D0A-B30B-6F6A83AEAE7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9268618-9A8C-4D0A-B30B-6F6A83AEAE7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9268618-9A8C-4D0A-B30B-6F6A83AEAE7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

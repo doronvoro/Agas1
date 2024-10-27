@@ -1,0 +1,157 @@
+﻿@page "/manage-tanks"
+@using Agas1.Logic.Models
+@using Agas1.Logic.Services
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@rendermode  InteractiveServer	
+
+@inject DistilleryService Service
+
+<h3>Manage Tanks</h3>
+
+<div class="container">
+    <div class="row">
+        <!-- Add/Update Tank Form -->
+        <div class="col-md-6">
+            <h4>@(editMode ? "Edit Tank" : "Add New Tank")</h4>
+
+            <div class="form-group">
+                <label>Tank Name</label>
+                <input type="text" @bind="currentTank.Name" class="form-control" placeholder="Enter tank name" />
+            </div>
+
+            <div class="form-group">
+                <label>Initial Volume</label>
+                <input type="number" @bind="currentTank.Volume" class="form-control" placeholder="Enter initial volume" />
+            </div>
+
+            <div class="form-group">
+                <label>Is Visible</label>
+                <input type="checkbox" @bind="currentTank.IsVisible" />
+            </div>
+
+            <button class="btn btn-primary mt-3" @onclick="SaveTank">@((editMode) ? "Update" : "Add") Tank</button>
+            <button class="btn btn-secondary mt-3" @onclick="ClearForm">Clear</button>
+
+            @if (!string.IsNullOrEmpty(successMessage))
+            {
+                <div class="alert alert-success mt-3">@successMessage</div>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger mt-3">@errorMessage</div>
+            }
+        </div>
+
+        <!-- List of Tanks -->
+        <div class="col-md-6">
+            <h4>Tanks</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Volume</th>
+                        <th>Is Visible</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tank in tanks)
+                    {
+                        <tr>
+                            <td>@tank.Name</td>
+                            <td>@tank.Volume</td>
+                            <td>@(tank.IsVisible ? "Yes" : "No")</td>
+                            <td>
+                                <button class="btn btn-warning" @onclick="() => EditTank(tank)">Edit</button>
+                                <button class="btn btn-danger" @onclick="() => DeleteTank(tank.Id)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Tank> tanks = new();
+    private Tank currentTank = new();
+    private bool editMode = false;
+    private string successMessage;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tanks = await Service.GetAllTanksAsync();
+    }
+
+    private async Task SaveTank()
+    {
+        try
+        {
+            if (editMode)
+            {
+                await Service.UpdateTank(currentTank);
+                successMessage = "Tank updated successfully!";
+            }
+            else
+            {
+                await Service.AddTank(currentTank.Name, currentTank.Volume);
+                successMessage = "Tank added successfully!";
+            }
+
+            tanks = await Service.GetAllTanksAsync();  // Refresh list
+            ClearForm();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private void EditTank(Tank tank)
+    {
+        currentTank = new Tank
+            {
+                Id = tank.Id,
+                Name = tank.Name,
+                Volume = tank.Volume,
+                IsVisible = tank.IsVisible
+            };
+        editMode = true;
+        successMessage = string.Empty;
+        errorMessage = string.Empty;
+    }
+
+    private async Task DeleteTank(int tankId)
+    {
+        try
+        {
+            var success = await Service.DeleteTankAsync(tankId);
+            if (success)
+            {
+                successMessage = "Tank deleted successfully!";
+                tanks = await Service.GetAllTanksAsync();  // Refresh list
+            }
+            else
+            {
+                errorMessage = "Cannot delete the tank. It is already in use.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private void ClearForm()
+    {
+        currentTank = new Tank();
+        editMode = false;
+        successMessage = string.Empty;
+        errorMessage = string.Empty;
+    }
+}
