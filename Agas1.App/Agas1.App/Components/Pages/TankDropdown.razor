@@ -1,35 +1,38 @@
 ﻿@using Agas1.Logic.Models
+@using Agas1.Logic.Services
+@rendermode InteractiveServer
+
+@inject DistilleryService Service
 
 @code {
-    [Parameter] public List<Tank> Tanks { get; set; }  // Receive the list of tanks from the parent
-    [Parameter] public int SelectedTankId { get; set; }  // Two-way binding for the selected tank
-    [Parameter] public EventCallback<int> SelectedTankIdChanged { get; set; }  // Event callback for when the tank is selected
+    [Parameter] public Tank? SelectedTank { get; set; }
+    [Parameter] public EventCallback<Tank> SelectedTankChanged { get; set; }  // Event callback for when the tank is selected
+    private List<Tank> visibleTanks = new List<Tank>();
+
+    protected override async Task OnInitializedAsync() => visibleTanks = await Service.GetVisibleTanksAsync();
 
     private async Task OnSelectedTankChanged(ChangeEventArgs e)
     {
-        if (int.TryParse(e.Value.ToString(), out var newSelectedTankId))
-        {
-            SelectedTankId = newSelectedTankId;
-        }
-        else
-        {
-            SelectedTankId = 0;  // Reset when no valid selection
-        }
+        
+        int.TryParse(e.Value.ToString(), out var selectedTankId);
 
-        await SelectedTankIdChanged.InvokeAsync(SelectedTankId);  // Emit the selected tank ID to the parent
+        SelectedTank = visibleTanks.FirstOrDefault(f => f.Id == selectedTankId);
+        
+        await SelectedTankChanged.InvokeAsync(SelectedTank);  
     }
 
     protected override void OnParametersSet()
     {
-        // This ensures that the dropdown correctly re-renders when the parent resets SelectedTankId to 0
     }
 }
 
 <select class="form-select" @onchange="OnSelectedTankChanged">
     <!-- Default option with value 0 -->
-    <option value="0">-- Select a Tank --</option>
-    @foreach (var tank in Tanks)
+    <option selected value="0">-- Select a Tank --</option>
+
+
+    @foreach (var tank in visibleTanks)
     {
-        <option value="@tank.Id">@tank.Name</option>
+        <option value="@tank.Id">@($"{tank.Name} ({tank.Volume} liters) {DateTime.Now.ToLongTimeString()}")</option>
     }
 </select>

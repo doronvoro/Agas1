@@ -18,14 +18,16 @@
         {
             selectedTank = null;  // Reset if no tank is selected
         }
+
+
     }
 }
 
 @if (selectedTank != null)
 {
-    <label>Current Volume: @selectedTank.Volume liters</label>
+    <label>@selectedTank.Volume liters</label>
 }
 else
 {
-    <label>No tank selected</label>
+   @*  <label>No tank selected</label> *@
 }

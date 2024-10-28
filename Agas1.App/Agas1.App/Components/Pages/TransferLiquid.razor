@@ -9,20 +9,47 @@
 @inject DistilleryService Service
 
 @code {
-    private int fromTankId;
-    private int toTankId;
+    // private int fromTankId;
+    // private int toTankId;
+
+    private Tank fromTank;
+    private Tank toTank;
+
     private double volume;
     private string message;
-    private List<Tank> tanks = new List<Tank>();  // Store the list of tanks
+  //  private List<Tank> tanks = new List<Tank>();  // Store the list of tanks
 
     protected override async Task OnInitializedAsync()
     {
-        tanks = await Service.GetAllTanksAsync();  // Fetch all tanks once
+        //tanks = await Service.GetAllTanksAsync();  // Fetch all tanks once
     }
 
     private async Task TransferLiquidOnClick()
     {
-        await Service.TransferLiquidBetweenTanks(fromTankId, toTankId, volume);
+        if (fromTank.Id == 0 || toTank.Id == 0)  // Ensure the user has selected a valid tank
+        {
+            message = "Please select a valid tank.";
+            return;
+        }
+
+        if (fromTank.Id == toTank.Id )  // Ensure the user has selected a valid tank
+        {
+            message = "'Tank from' and 'tank to' must be different.";
+            return;
+        }
+        if (volume <= 0)
+        {
+            message = "Please select a valid volume.";
+            return;
+        }
+        if ((fromTank.Volume - volume) < 0 )   
+        {
+            message = "Please select a valid volume. After the transfer of liquid, the tank has a negative volume";
+            return;
+        }
+
+
+        await Service.TransferLiquidBetweenTanks(fromTank.Id, toTank.Id, volume);
         volume = 0;  // Reset the form
         message = "Liquid transferred successfully!";
     }
@@ -31,11 +58,11 @@
 <h3>Transfer Liquid Between Tanks</h3>
 
 <label>From Tank: </label>
-<TankDropdown Tanks="tanks" SelectedTankId="fromTankId" SelectedTankIdChanged="@(id => fromTankId = id)" />
-<br />
 
+<TankDropdown SelectedTank="@fromTank" SelectedTankChanged="@(tank => fromTank = tank)" />
+<br />
 <label>To Tank: </label>
-<TankDropdown Tanks="tanks" SelectedTankId="toTankId" SelectedTankIdChanged="@(id => toTankId = id)" />
+<TankDropdown SelectedTank="@toTank" SelectedTankChanged="@(tank => toTank = tank)" />
 <br />
 
 <label>Volume: </label>

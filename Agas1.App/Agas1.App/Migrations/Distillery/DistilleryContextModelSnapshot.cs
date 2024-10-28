@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Agas1.Logic.Migrations
+namespace Agas1.App.Migrations.Distillery
 {
     [DbContext(typeof(DistilleryContext))]
     partial class DistilleryContextModelSnapshot : ModelSnapshot

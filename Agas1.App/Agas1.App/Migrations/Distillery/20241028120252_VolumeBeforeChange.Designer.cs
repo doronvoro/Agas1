@@ -3,16 +3,19 @@ using System;
 using Agas1.Logic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Agas1.Logic.Migrations
+namespace Agas1.App.Migrations.Distillery
 {
     [DbContext(typeof(DistilleryContext))]
-    partial class DistilleryContextModelSnapshot : ModelSnapshot
+    [Migration("20241028120252_VolumeBeforeChange")]
+    partial class VolumeBeforeChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");

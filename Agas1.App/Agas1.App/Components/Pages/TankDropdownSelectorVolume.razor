@@ -1,0 +1,39 @@
+﻿@using Agas1.Logic.Models
+@using Agas1.Logic.Services
+@inject DistilleryService Service
+
+@code {
+    private List<Tank> visibleTanks = new List<Tank>();
+    [Parameter] public int SelectedTankId { get; set; }  // Two-way binding for the selected tank
+
+    [Parameter] public Tank? SelectedTank { get;   set; }  
+
+
+    private async Task OnSelectedTankChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out var newSelectedTankId))
+        {
+            SelectedTankId = newSelectedTankId;
+        }
+        else
+        {
+            SelectedTankId = 0;  // Reset when no valid selection
+        }
+
+        SelectedTank = visibleTanks.FirstOrDefault(f => f.Id == SelectedTankId);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        visibleTanks = await Service.GetVisibleTanksAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        // This ensures that the dropdown correctly re-renders when the parent resets SelectedTankId to 0
+    }
+}
+
+@* <TankDropdown Tanks="visibleTanks" SelectedTankId="SelectedTankId" SelectedTankIdChanged="OnSelectedTankChanged" />
+<TankSelector SelectedTankId="SelectedTankId" />
+ *@

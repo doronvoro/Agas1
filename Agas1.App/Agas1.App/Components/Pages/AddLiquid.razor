@@ -9,56 +9,48 @@
 @inject DistilleryService Service
 
 @code {
-    private int selectedTankId = 0;  // Default to 0 (no tank selected)
+    private Tank selectedTank = new();  // Default to 0 (no tank selected)
     private int selectedLiquidTypeId;
     private List<LiquidType> liquidTypes = new List<LiquidType>();
-    private List<Tank> visibleTanks = new List<Tank>();  // Store visible tanks
     private double volume;
     private string message;
 
     // Use async method to load data once
     protected override async Task OnInitializedAsync()
     {
-        // Fetch visible tanks and liquid types asynchronously
-        visibleTanks = await Service.GetVisibleTanksAsync();
         liquidTypes = await Service.GetLiquidTypesAsync();
     }
 
     // Async method to add liquid to the tank
     private async Task AddLiquidToTank()
     {
-        if (selectedTankId == 0)  // Ensure the user has selected a valid tank
+        if (selectedTank.Id == 0)  // Ensure the user has selected a valid tank
         {
             message = "Please select a valid tank.";
+            return;
+        }
+        if(volume <= 0)
+        {
+            message = "Please select a valid volume.";
             return;
         }
 
         try
         {
-            // Fetch the selected tank and liquid type details
-            var selectedTank = visibleTanks.FirstOrDefault(t => t.Id == selectedTankId);
             var selectedLiquidType = liquidTypes.FirstOrDefault(lt => lt.Id == selectedLiquidTypeId);
 
-            if (selectedTank == null || selectedLiquidType == null)
+            if ( selectedLiquidType == null)
             {
                 message = "Invalid tank or liquid type selected.";
                 return;
             }
 
-            double previousVolume = selectedTank.Volume;  // Get the tank's previous volume
-            await Service.FillTankFromExternalResource(selectedTankId, selectedLiquidTypeId, volume);
+            var previousVolume = selectedTank.Volume;  // Get the tank's previous volume
+            var updatedTank= await Service.FillTankFromExternalResource(selectedTank.Id, selectedLiquidTypeId, volume);
 
-            // Update the total volume after adding the liquid
-            double newTotalVolume = previousVolume + volume;
-
-            // Update the tank's volume (just for display purposes, to avoid re-fetching the list)
-            selectedTank.Volume = newTotalVolume;
-
-            // Improve the success message
             message = $"{volume} liters of {selectedLiquidType.Name} added to tank {selectedTank.Name}. " +
-                      $"The total volume is now {newTotalVolume} liters ({previousVolume} + {volume}).";
+                      $"The total volume is now {updatedTank.Volume} liters ({previousVolume} + {volume}).";
 
-            // Reset the form fields after successful addition
             ResetForm();
         }
         catch (Exception ex)
@@ -70,23 +62,18 @@
     // Method to reset the form fields
     private void ResetForm()
     {
-        selectedTankId = 0;  // Reset tank selection
         selectedLiquidTypeId = 0;  // Reset liquid type selection
         volume = 0;  // Reset volume
+       // selectedTank =new();
     }
 }
 
 <h3>Add Liquid to Tank</h3>
+<TankDropdown SelectedTank="@selectedTank" SelectedTankChanged="@(tank => selectedTank = tank)" />
 
-<!-- Use TankDropdown Component and pass the loaded visibleTanks -->
-<TankDropdown Tanks="visibleTanks" SelectedTankId="selectedTankId" SelectedTankIdChanged="@(id => selectedTankId = id)" />
 <br />
 
-<!-- Use TankSelector Component to show the selected tank's current volume -->
-<TankSelector SelectedTankId="selectedTankId" />
-<br />
 
-<!-- Dropdown for Liquid Type selection -->
 <label>Liquid Type: </label>
 <select @bind="selectedLiquidTypeId" class="form-select">
     @foreach (var type in liquidTypes)

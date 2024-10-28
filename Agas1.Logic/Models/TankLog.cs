@@ -16,5 +16,6 @@
         public int? SourceTankId { get; set; }  // Nullable for transfers
         public Tank SourceTank { get; set; }
         public DateTime Date { get; set; }
+        public double VolumeBeforeChange { get;   set; }
     }
 }

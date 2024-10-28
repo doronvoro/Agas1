@@ -19,41 +19,36 @@ namespace Agas1.Logic.Services
         }
 
         // Add liquid from external resource (like water) into a tank
-        public async Task FillTankFromExternalResource(int tankId, int liquidTypeId, double volume)
+        public async Task<Tank> FillTankFromExternalResource(int tankId, int liquidTypeId, double volume)
         {
-            var tank = await _context.Tanks.FindAsync(tankId);
-            if (tank == null)
+            var tank = await _context.Tanks.FindAsync(tankId) ?? 
                 throw new InvalidOperationException("Tank not found");
-
-            var liquidType = await _context.LiquidTypes.FindAsync(liquidTypeId);
-            if (liquidType == null)
+           
+            var liquidType = await _context.LiquidTypes.FindAsync(liquidTypeId) ?? 
                 throw new InvalidOperationException("Liquid type not found");
 
-            // Update tank volume
-            tank.Volume += volume;
-
-            // Log the liquid addition
-            //var addition = new LiquidAddition
-            //{
-            //    TankId = tankId,
-            //    LiquidTypeId = liquidTypeId,
-            //    VolumeAdded = volume,
-            //    DateAdded = DateTime.UtcNow
-            //};
-            //_context.LiquidAdditions.Add(addition);
-
+           
+             
             // Log the operation in the TankLog
             var log = new TankLog
             {
                 TankId = tankId,
                 Operation = OperationType.Addition,  // Use enum
+                VolumeBeforeChange = tank.Volume,
                 VolumeChange = volume,
                 LiquidTypeId = liquidTypeId,
                 Date = DateTime.UtcNow
             };
+
+
+            // Update tank volume
+            tank.Volume += volume;
+
             _context.TankLogs.Add(log);
 
             await _context.SaveChangesAsync();
+
+            return tank;
         }
 
         // Transfer liquid from one tank to another
@@ -68,33 +63,43 @@ namespace Agas1.Logic.Services
             if (fromTank.Volume < volume)
                 throw new InvalidOperationException("Insufficient volume in source tank");
 
-            // Update tank volumes
-            fromTank.Volume -= volume;
-            toTank.Volume += volume;
+
 
             // Log the transfer from the source tank
             var fromLog = new TankLog
             {
                 TankId = fromTankId,
                 Operation = OperationType.TransferOut,  // Use enum
+                VolumeBeforeChange = fromTank.Volume,
                 VolumeChange = -volume,
                 LiquidTypeId = null,  // No specific liquid type for transfers (can be mixed)
                 SourceTankId = toTankId,
                 Date = DateTime.UtcNow
             };
-            _context.TankLogs.Add(fromLog);
 
             // Log the transfer to the destination tank
             var toLog = new TankLog
             {
                 TankId = toTankId,
                 Operation = OperationType.TransferIn,  // Use enum
+                VolumeBeforeChange = toTank.Volume,
                 VolumeChange = volume,
                 LiquidTypeId = null,  // No specific liquid type for transfers (can be mixed)
                 SourceTankId = fromTankId,
                 Date = DateTime.UtcNow
             };
+
+            _context.TankLogs.Add(fromLog);
             _context.TankLogs.Add(toLog);
+
+            // Update tank volumes
+            fromTank.Volume -= volume;
+            toTank.Volume += volume;
+
+            if (fromTank.Volume < 0 || toTank.Volume < 0)
+            {
+                throw new Exception("Invalid Volume");
+            }
 
             await _context.SaveChangesAsync();
         }
@@ -136,9 +141,8 @@ namespace Agas1.Logic.Services
                 return false; // Volume cannot be negative
             }
 
-            // Update the tank's volume
-            tank.Volume = newVolume;
-            await _context.SaveChangesAsync();
+           
+           // await _context.SaveChangesAsync();
 
             // Create a new TankLog record
             var tankLog = new TankLog
@@ -146,10 +150,14 @@ namespace Agas1.Logic.Services
                 TankId = tankId,
                 TankProcessId = tankProcessId,  // Updated to use TankProcessId
                 MaterialId = materialId,
+                VolumeBeforeChange = tank.Volume,
                 VolumeChange = volumeChange,
                 Operation = OperationType.TankProcess,
                 Date = DateTime.UtcNow
             };
+
+            // Update the tank's volume
+            tank.Volume = newVolume;
 
             _context.TankLogs.Add(tankLog);
             await _context.SaveChangesAsync();

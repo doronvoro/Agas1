@@ -10,18 +10,23 @@
 
 @code {
     private int tankId;
+    private Tank selectedTank = new();
+
     private List<TankLog> tankLogs = new List<TankLog>();
 
     private async Task LoadTankHistory()
     {
-        tankLogs = await Service.GetTankHistoryAsync(tankId);
+        tankLogs = await Service.GetTankHistoryAsync(selectedTank.Id);
     }
 }
 
 <h3>Tank History</h3>
 
 <label>Tank ID: </label>
-<input type="number" @bind="tankId" class="form-control" />
+<TankDropdown SelectedTank="@selectedTank" SelectedTankChanged="@(tank => selectedTank = tank)" />
+
+
+@* <input type="number" @bind="tankId" class="form-control" /> *@
 <button @onclick="LoadTankHistory" class="btn btn-primary mt-2">Load History</button>
 
 @if (tankLogs.Count > 0)
@@ -31,7 +36,9 @@
             <tr>
                 <th>Date</th>
                 <th>Operation</th>
-                <th>Volume Change</th>
+                <th>V.Before</th>
+                <th>V.Change</th>
+                <th>V.After</th>
                 <th>Liquid Type</th>
                 <th>Source/Destination Tank</th>
             </tr>
@@ -42,7 +49,9 @@
                 <tr>
                     <td>@log.Date</td>
                     <td>@log.Operation</td>
+                    <td>@log.VolumeBeforeChange</td>
                     <td>@log.VolumeChange</td>
+                    <td>@(log.VolumeBeforeChange + log.VolumeChange)</td>
                     <td>@(log.LiquidType != null ? log.LiquidType.Name : "Mixed")</td>
                     <td>@(log.SourceTankId.HasValue ? $"Tank {log.SourceTankId}" : "N/A")</td>
                 </tr>

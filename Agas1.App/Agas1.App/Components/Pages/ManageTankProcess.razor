@@ -9,20 +9,22 @@
 @inject DistilleryService Service
 
 @code {
-    private int selectedTankId = 0;
+    //private int selectedTankId = 0;
+    private Tank selectedTank = new();
+
     private int selectedTankProcessId;  // Updated to TankProcessId
     private double volumeChange;
     private int? selectedMaterialId = null;
     private List<TankProcess> tankProcesses = new List<TankProcess>();  // Updated to TankProcess
     private List<Material> materials = new List<Material>();
-    private List<Tank> visibleTanks = new List<Tank>(); // Store visible tanks here
+   // private List<Tank> visibleTanks = new List<Tank>(); // Store visible tanks here
     private string message = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         tankProcesses = await Service.GetTankProcessesAsync();
         materials = await Service.GetMaterialsAsync();
-        visibleTanks = await Service.GetVisibleTanksAsync();  // Fetch the tanks asynchronously
+      //  visibleTanks = await Service.GetVisibleTanksAsync();  // Fetch the tanks asynchronously
     }
 
     private async Task CreateProcess()
@@ -33,11 +35,17 @@
             return;
         }
 
-        var result = await Service.ProcessTank(selectedTankId, selectedTankProcessId, volumeChange, selectedMaterialId);
+        if (selectedTank.Id == 0)  // Ensure the user has selected a valid tank
+        {
+            message = "Please select a valid tank.";
+            return;
+        }
+
+        var result = await Service.ProcessTank(selectedTank.Id, selectedTankProcessId, volumeChange, selectedMaterialId);
 
         if (result)
         {
-            message = $"{Math.Abs(volumeChange)} liters {(volumeChange > 0 ? "added" : "reduced")} in tank {selectedTankId} using process {selectedTankProcessId}.";
+            message = $"{Math.Abs(volumeChange)} liters {(volumeChange > 0 ? "added" : "reduced")} in tank {selectedTank.Name} using process {selectedTankProcessId}.";
         }
         else
         {
@@ -49,7 +57,7 @@
 
     private void ResetForm()
     {
-        selectedTankId = 0;
+        selectedTank= new();
         selectedTankProcessId = 0;  // Updated to reset TankProcessId
         volumeChange = 0;
         selectedMaterialId = null;
@@ -58,8 +66,10 @@
 
 <h3>Manage Tank Process</h3>
 
-<!-- Bind the visible tanks to the TankDropdown after loading them in OnInitializedAsync -->
-<TankDropdown Tanks="visibleTanks" SelectedTankId="selectedTankId" SelectedTankIdChanged="@(id => selectedTankId = id)" />
+
+<TankDropdown SelectedTank="@selectedTank" SelectedTankChanged="@(tank => selectedTank = tank)" />
+
+
 <br />
 
 <label>Process: </label>
