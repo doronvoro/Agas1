@@ -153,6 +153,7 @@ namespace Agas1.Logic.Services
                 VolumeBeforeChange = tank.Volume,
                 VolumeChange = volumeChange,
                 Operation = OperationType.TankProcess,
+         
                 Date = DateTime.UtcNow
             };
 

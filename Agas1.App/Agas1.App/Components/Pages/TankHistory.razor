@@ -39,8 +39,8 @@
                 <th>V.Before</th>
                 <th>V.Change</th>
                 <th>V.After</th>
-                <th>Liquid Type</th>
-                <th>Source/Destination Tank</th>
+                @* <th>Liquid Type</th> *@
+                <th>Source/Destination</th>
             </tr>
         </thead>
         <tbody>
@@ -52,8 +52,10 @@
                     <td>@log.VolumeBeforeChange</td>
                     <td>@log.VolumeChange</td>
                     <td>@(log.VolumeBeforeChange + log.VolumeChange)</td>
-                    <td>@(log.LiquidType != null ? log.LiquidType.Name : "Mixed")</td>
-                    <td>@(log.SourceTankId.HasValue ? $"Tank {log.SourceTankId}" : "N/A")</td>
+                    <td>@(log.GetSourceDestinationName())</td>
+
+                  @*   <td>@(log.LiquidType != null ? log.LiquidType.Name : "Mixed")</td>
+                    <td>@(log.SourceTankId.HasValue ? $"Tank {log.SourceTankId}" : "N/A")</td> *@
                 </tr>
             }
         </tbody>
