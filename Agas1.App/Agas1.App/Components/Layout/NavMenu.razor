@@ -4,7 +4,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Agas1.App</a>
+        <a class="navbar-brand" href="">Agas1</a>
     </div>
 </div>
 
@@ -12,47 +12,9 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="manage-liquid-types">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>Liquids
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="manage-tanks">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>Tanks
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="add-liquid">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>Fill
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="transfer-liquid">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>Transfer
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="manage-tank-process">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>Process
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="tank-history">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>History
-            </NavLink>
-        </div>
-
-        
-
+       
+         
+    @* 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
@@ -63,16 +25,59 @@
             <NavLink class="nav-link" href="weather">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
-        </div>
+        </div> 
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
+                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required ----
             </NavLink>
         </div>
-
+        *@
         <AuthorizeView>
             <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="manage-liquid-types">
+                        <span class="bi1 bi-droplet-half fs-5" aria-hidden="true"></span> Liquids
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="manage-tanks">
+                        <span class="bi1 bi-box-seam fs-5" aria-hidden="true"></span> Tanks
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="add-liquid">
+                        <span class="bi1 bi-plus-circle-fill fs-5" aria-hidden="true"></span> Fill
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="transfer-liquid">
+                        <span class="bi1 bi-arrow-left-right fs-5" aria-hidden="true"></span> Transfer
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="manage-tank-process">
+                        <span class="bi1  bi-gear-fill  fs-5" aria-hidden="true"></span> Process
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="tank-history">
+                        <span class="bi1 bi-clock-history  fs-5" aria-hidden="true"></span> History
+                    </NavLink>
+                </div>
+
+
+
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Manage">
                         <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
