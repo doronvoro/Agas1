@@ -14,6 +14,8 @@
     private List<LiquidType> liquidTypes = new List<LiquidType>();
     private double volume;
     private string message;
+    private bool isSuccess;
+
 
     // Use async method to load data once
     protected override async Task OnInitializedAsync()
@@ -24,6 +26,8 @@
     // Async method to add liquid to the tank
     private async Task AddLiquidToTank()
     {
+        isSuccess = false;
+
         if (selectedTank.Id == 0)  // Ensure the user has selected a valid tank
         {
             message = "Please select a valid tank.";
@@ -48,9 +52,10 @@
             var previousVolume = selectedTank.Volume;  // Get the tank's previous volume
             var updatedTank= await Service.FillTankFromExternalResource(selectedTank.Id, selectedLiquidTypeId, volume);
 
-            message = $"{volume} liters of {selectedLiquidType.Name} added to tank {selectedTank.Name}. " +
-                      $"The total volume is now {updatedTank.Volume} liters ({previousVolume} + {volume}).";
+        
+            message = $"successfully completed | tank {selectedTank.Name} | volume before {previousVolume} | volume chaenged {volume} | current volume {updatedTank.Volume} ";
 
+            isSuccess = true;
             ResetForm();
         }
         catch (Exception ex)
@@ -93,5 +98,5 @@
 
 @if (!string.IsNullOrEmpty(message))
 {
-        <div class="alert alert-success mt-3">@message</div>
+        <div class="alert @(isSuccess ?"alert-success" :  "alert-danger") mt-3">@message</div>
 }

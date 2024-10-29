@@ -1,4 +1,5 @@
-﻿using Agas1.Logic.Models;
+﻿using Agas1.Logic.Migrations;
+using Agas1.Logic.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Agas1.Logic.Services
@@ -212,13 +213,29 @@ namespace Agas1.Logic.Services
         }
 
         // Get the history of all operations performed on a tank
-        public async Task<List<TankLog>> GetTankHistoryAsync(int tankId)
+        public async Task<List<TankLogRecord>> GetTankHistoryAsync(int tankId)
         {
-            return await _context.TankLogs
-                .Include(t => t.LiquidType)
-                .Where(t => t.TankId == tankId)
-                .OrderBy(t => t.Date)
-                .ToListAsync();
+
+            return await _context.TankLogs.Where(t => t.TankId == tankId)
+                                          .Select(t => new TankLogRecord
+                                          {
+                                              Date = t.Date,
+                                              Id = t.Id,
+                                              LiquidTypeId = t.LiquidTypeId,
+                                              LiquidTypeName = t.LiquidType.Name,
+                                              MaterialId = t.MaterialId,
+                                              MaterialName = t.Material.Name,
+                                              Operation = t.Operation,
+                                              ProcessName = t.TankProcess.Name,
+                                              SourceTankId = t.SourceTankId,
+                                              SourceTankName = t.SourceTank.Name,
+                                              TankId = t.TankId,
+                                              TankName = t.Tank.Name,
+                                              TankProcessId = t.TankProcessId,
+                                              TankProcessName = t.TankProcess.Name,
+                                              VolumeBeforeChange = t.VolumeBeforeChange,
+                                              VolumeChange = t.VolumeChange
+                                          }).ToListAsync();
         }
 
         // Get a report of all tanks and their current volume

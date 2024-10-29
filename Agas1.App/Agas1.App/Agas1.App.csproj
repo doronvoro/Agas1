@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Agas1.Logic\Agas1.Logic.csproj" />
     <ProjectReference Include="..\Agas1.App.Client\Agas1.App.Client.csproj" />
+    <PackageReference Include="ClosedXML" Version="0.104.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />

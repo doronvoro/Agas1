@@ -22,27 +22,6 @@
         //@*   <td>@(log.LiquidType != null ? log.LiquidType.Name : "Mixed")</td>
         //  <td>@(log.SourceTankId.HasValue ? $"Tank {log.SourceTankId}" : "N/A")</td> *@
 
-        public string GetSourceDestinationName()
-        {
-            if(SourceTankId.HasValue)
-            {
-                return $"Tank {SourceTank.Name}";
-            }
-
-            if (LiquidTypeId.HasValue)
-            {
-                return LiquidType.Name;
-            }
-
-            if(TankProcessId.HasValue)
-            {
-                return TankProcessId.ToString();
-
-                //var material = MaterialId.HasValue ? $"({Material.Name})" : string.Empty;
-                //return $"{TankProcess.Name} {material}";
-
-            }
-            return "N/A";
-        }
+      
     }
 }
